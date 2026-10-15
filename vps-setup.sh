@@ -16,6 +16,7 @@ set -e
 R=/opt/x-digest/repo
 [ -d $R ] || git clone -q --depth 1 -b gh-pages https://github.com/ThomasHoohoo/x-digest.git $R
 git -C $R fetch -q --depth 1 origin gh-pages && git -C $R reset -q --hard origin/gh-pages
+if [ -f $R/convert.py ]; then python3 $R/convert.py; else
 python3 - <<'PY'
 import os,re,base64,shutil
 R='/opt/x-digest/repo'; W='/var/www/x-digest'
@@ -30,6 +31,7 @@ for d in os.listdir(R):
     h=re.sub(r'<script>document\.querySelectorAll.*?</script>','',h,flags=re.S)
     open(f'{W}/{d}/index.html','w').write(h)
 PY
+fi
 P
 chmod +x /opt/x-digest/pull.sh && /opt/x-digest/pull.sh
 cat > /etc/nginx/sites-available/x-digest <<'N'
